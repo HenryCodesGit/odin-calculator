@@ -1,6 +1,35 @@
 
 let currDisplayValue = 0;
 
+//Keyboard presses
+document.addEventListener('keydown', (event) => {
+    event.preventDefault();
+    var name = event.key;
+    var code = event.code;
+    // Alert the key name and key code on keydown
+    //alert(`Key pressed ${name} \r\n Key code value: ${code}`);
+
+    //Handling number presses
+    if(code.match('Digit') || code.match('Numpad') && !isNaN(parseInt(code[code.length-1]))){
+        let b = document.querySelector('#num'+code[code.length-1]);
+        b.click();
+        return;
+    }
+
+    //Handling pressing Enter
+    if(code == 'Enter' || code == 'NumpadEnter'){
+        enter();
+        return;
+    }
+
+    //Handling NumpadAdd, NumpadSubtract, NumpadMultiply, NumpadDivide
+    let check = document.querySelector('button.operator#'+code.replace('Numpad','').toLowerCase());
+    if(check){check.click();}
+
+
+
+  }, false);
+
 //Keep track of which values are to be used in an operation
 let a = null;
 let b = null;
@@ -96,10 +125,13 @@ function enter(){
 
     //Next state -> 'a' exists, operation is not null, currentDisplayValue is null
     if(a && operation){
-        if(lastOperation && !currDisplayValue){
+        if(lastOperation && currDisplayValue == null){
             a = operate(lastOperation,parseFloat(a),parseFloat(b))
             DISPLAY.textContent = a;
-        } else {
+        } else if (currDisplayValue == null){
+            return;//Do nothing
+        } else
+        {
             b = parseFloat(currDisplayValue);
             a = operate(operation,parseFloat(a),parseFloat(b));
             DISPLAY.textContent = a;
